@@ -1762,6 +1762,11 @@ func addIptunAttrs(iptun *Iptun, linkInfo *nl.RtAttr) {
 	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_PMTUDISC, nl.Uint8Attr(iptun.PMtuDisc))
 	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_TTL, nl.Uint8Attr(iptun.Ttl))
 	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_TOS, nl.Uint8Attr(iptun.Tos))
+	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_ENCAP_FLAGS, nl.Uint16Attr(iptun.EncapFlags))
+	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_ENCAP_SPORT, htons(iptun.EncapSport))
+	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_ENCAP_DPORT, htons(iptun.EncapDport))
+	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_ENCAP_TYPE, nl.Uint16Attr(iptun.EncapType))
+	nl.NewRtAttrChild(data, nl.IFLA_IPTUN_ENCAP_FLAGS, nl.Uint16Attr(iptun.EncapFlags))
 }
 
 func parseIptunData(link Link, data []syscall.NetlinkRouteAttr) {
@@ -1778,6 +1783,14 @@ func parseIptunData(link Link, data []syscall.NetlinkRouteAttr) {
 			iptun.Tos = uint8(datum.Value[0])
 		case nl.IFLA_IPTUN_PMTUDISC:
 			iptun.PMtuDisc = uint8(datum.Value[0])
+		case nl.IFLA_IPTUN_ENCAP_SPORT:
+			iptun.EncapSport = ntohs(datum.Value[0:2])
+		case nl.IFLA_IPTUN_ENCAP_DPORT:
+			iptun.EncapDport = ntohs(datum.Value[0:2])
+		case nl.IFLA_IPTUN_ENCAP_TYPE:
+			iptun.EncapType = native.Uint16(datum.Value[0:2])
+		case nl.IFLA_IPTUN_ENCAP_FLAGS:
+			iptun.EncapFlags = native.Uint16(datum.Value[0:2])
 		}
 	}
 }
