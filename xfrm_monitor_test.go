@@ -5,7 +5,7 @@ package netlink
 import (
 	"testing"
 
-	"github.com/vishvananda/netlink/nl"
+	"github.com/orkun1675/netlink/nl"
 )
 
 func TestXfrmMonitorExpire(t *testing.T) {

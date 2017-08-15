@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/vishvananda/netlink/nl"
+	"github.com/orkun1675/netlink/nl"
 	"github.com/vishvananda/netns"
 )
 
