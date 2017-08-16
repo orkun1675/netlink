@@ -6,8 +6,8 @@ import (
 
 // Rule represents a netlink rule.
 type Fou struct {
-	Port    uint16
-	IpProto uint8
+	Port    int
+	IpProto int
 	Gue     bool
 	Ipv6    bool
 }

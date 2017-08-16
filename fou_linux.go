@@ -32,10 +32,10 @@ func (h *Handle) FouDel(fou *Fou) error {
 }
 
 func fouHandle(h *Handle, fou *Fou, command uint8) error {
-	if fou.Port == 0 {
+	if fou.Port < 1 {
 		return fmt.Errorf("invalid fou port: %d", fou.Port)
 	}
-	if !fou.Gue && fou.IpProto == 0 {
+	if !fou.Gue && (fou.IpProto < 1 || fou.IpProto > 255) {
 		return fmt.Errorf("either GUE or IpProto should be specified")
 	}
 
@@ -49,21 +49,22 @@ func fouHandle(h *Handle, fou *Fou, command uint8) error {
 	}
 	req := h.newNetlinkRequest(int(f.ID), syscall.NLM_F_EXCL|syscall.NLM_F_ACK)
 	req.AddData(msg)
-	req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_PORT, nl.Uint16Attr(fou.Port)))
+	req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_PORT, htons(uint16(fou.Port))))
 	if fou.Gue {
 		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_TYPE, nl.Uint8Attr(nl.GENL_FOU_ENCAP_GUE)))
 	} else {
 		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_TYPE, nl.Uint8Attr(nl.GENL_FOU_ENCAP_DIRECT)))
+		if fou.IpProto > 0 {
+			req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_IPPROTO, nl.Uint8Attr(uint8(fou.IpProto))))
+		}
 	}
 	if !fou.Ipv6 {
 		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_AF, nl.Uint16Attr(FAMILY_V4)))
 	} else {
 		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_AF, nl.Uint16Attr(FAMILY_V6)))
 	}
-	if fou.IpProto > 0 {
-		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_IPPROTO, nl.Uint8Attr(fou.IpProto)))
-	}
-
-	_, err = req.Execute(syscall.NETLINK_GENERIC, 0)
+	
+	res, err := req.Execute(syscall.NETLINK_GENERIC, 0)
+	fmt.Printf("command: %d, result: %v, err: %v\n", command, res, err)
 	return err
 }

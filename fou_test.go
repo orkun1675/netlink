@@ -8,6 +8,8 @@ import (
 
 func TestFouAddDel(t *testing.T) {
 	skipUnlessRoot(t)
+	tearDown := setUpNetlinkTestWithKModule(t, "fou")
+	defer tearDown()
 
 	fou1 := NewFou()
 	fou1.Port = 2222
@@ -30,6 +32,10 @@ func TestFouAddDel(t *testing.T) {
 
 	if err := FouDel(fou1); err != nil {
 		t.Fatal(err)
+	}
+
+	if err := FouDel(fou1); err == nil {
+		t.Fatal("Could delete a non-existing fou")
 	}
 
 	if err := FouDel(fou2); err != nil {
