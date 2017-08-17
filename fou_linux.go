@@ -64,6 +64,6 @@ func fouHandle(h *Handle, fou *Fou, command uint8) error {
 		req.AddData(nl.NewRtAttr(nl.GENL_FOU_ATTR_AF, nl.Uint16Attr(FAMILY_V6)))
 	}
 	
-	res, err := req.Execute(syscall.NETLINK_GENERIC, 0)
+	_, err = req.Execute(syscall.NETLINK_GENERIC, 0)
 	return err
 }
