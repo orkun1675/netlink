@@ -65,6 +65,5 @@ func fouHandle(h *Handle, fou *Fou, command uint8) error {
 	}
 	
 	res, err := req.Execute(syscall.NETLINK_GENERIC, 0)
-	fmt.Printf("command: %d, result: %v, err: %v\n", command, res, err)
 	return err
 }
